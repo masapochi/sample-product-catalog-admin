@@ -1,9 +1,4 @@
-import {
-  findByTestId,
-  fireEvent,
-  render,
-  screen,
-} from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import { rest } from "msw";
@@ -97,7 +92,7 @@ describe("Login", () => {
     // サーバーにリクエストが送信された場合（失敗）のレスポンスを定義する
     server.use(
       rest.post("/api/login", (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json({ user: null, success: false }));
+        return res(ctx.status(500));
       })
     );
 
@@ -140,10 +135,7 @@ describe("Redirect", () => {
   });
 
   it("ログイン状態だとログインページにアクセスできない", async () => {
-    sessionStorage.setItem(
-      "user",
-      JSON.stringify({ user: { username: "test" } })
-    );
+    sessionStorage.setItem("user", JSON.stringify({ user: "test" }));
     renderApp(["/login"]);
     expect(screen.getByTestId("location-display")).toHaveTextContent("/");
     expect(screen.getByText(/dashboard/i)).toBeInTheDocument();

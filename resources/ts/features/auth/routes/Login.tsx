@@ -33,16 +33,13 @@ export function Login(): JSX.Element {
   });
 
   async function onSubmit(formData: LoginInfo) {
-    const { data } = await axios.post("/api/login", formData);
-    if (!data.success) {
-      setLoginError("ユーザー名かパスワードが間違っています");
-    } else {
-      sessionStorage.setItem(
-        "user",
-        JSON.stringify({ user: { username: data.user.username } })
-      );
+    try {
+      const { data } = await axios.post("/api/login", formData);
+      sessionStorage.setItem("user", JSON.stringify({ user: data.username }));
       setLoginError("");
       navigate("/");
+    } catch (error) {
+      setLoginError("ユーザー名かパスワードが間違っています");
     }
   }
 
