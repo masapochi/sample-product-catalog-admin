@@ -1,25 +1,8 @@
 import "@testing-library/jest-dom";
+import { server } from "./mocks/servers";
 
-// type StoreType = { [key: string]: string };
-// const sessionStorageMock = () => {
-//     console.log("sessionStorageMock");
-//     let store: StoreType = {};
+beforeAll(() => server.listen());
 
-//     return {
-//         getItem(key: string) {
-//             return store[key];
-//         },
-//         setItem(key: string, value: string) {
-//             store[key] = value.toString();
-//         },
-//         removeItem(key: string) {
-//             delete store[key];
-//         },
-//         clear() {
-//             store = {};
-//         },
-//     };
-// };
-// Object.defineProperty(window, "sessionStorage", {
-//     value: sessionStorageMock,
-// });
+afterEach(() => server.resetHandlers());
+
+afterAll(() => server.close());

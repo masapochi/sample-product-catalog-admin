@@ -1,8 +1,9 @@
 import { useState } from "react";
+import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { LoginInfoSchema } from "../schemas/LoginInfoSchema";
-import type { LoginInfo } from "../types/auth";
+import type { LoginInfo, User } from "../types/auth";
 import { Navigate, useNavigate } from "react-router-dom";
 
 const defaultLoginInfo = {
@@ -12,6 +13,7 @@ const defaultLoginInfo = {
 
 export function Login(): JSX.Element {
   const navigate = useNavigate();
+  const [loginError, setLoginError] = useState("");
 
   const { user } = JSON.parse(
     sessionStorage.getItem("user") || JSON.stringify({ user: null })
@@ -20,6 +22,7 @@ export function Login(): JSX.Element {
   if (user) {
     return <Navigate to="/" />;
   }
+
   const {
     register,
     handleSubmit,
@@ -29,18 +32,25 @@ export function Login(): JSX.Element {
     resolver: zodResolver(LoginInfoSchema),
   });
 
-  function onSubmit(formData: LoginInfo) {
-    sessionStorage.setItem(
-      "user",
-      JSON.stringify({ user: { username: formData.username } })
-    );
-    navigate("/");
+  async function onSubmit(formData: LoginInfo) {
+    const { data } = await axios.post("/api/login", formData);
+    if (!data.success) {
+      setLoginError("ユーザー名かパスワードが間違っています");
+    } else {
+      sessionStorage.setItem(
+        "user",
+        JSON.stringify({ user: { username: data.user.username } })
+      );
+      setLoginError("");
+      navigate("/");
+    }
   }
 
   return (
     <>
       <h1>Login</h1>
       <form onSubmit={handleSubmit(onSubmit)}>
+        {loginError && <p>{loginError}</p>}
         <div>
           <label htmlFor="username">Username</label>
           <input id="username" type="text" {...register("username")} />
