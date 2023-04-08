@@ -3,7 +3,7 @@ import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { LoginInfoSchema } from "../schemas/LoginInfoSchema";
-import type { LoginInfo, User } from "../types/auth";
+import type { LoginInfoType, UserType } from "../types/auth";
 import { Navigate, useNavigate } from "react-router-dom";
 
 const defaultLoginInfo = {
@@ -12,30 +12,26 @@ const defaultLoginInfo = {
 };
 
 export function Login(): JSX.Element {
+  const user: UserType = JSON.parse(sessionStorage.getItem("user") || "null");
+
+  if (user) return <Navigate to="/" />;
+
   const navigate = useNavigate();
   const [loginError, setLoginError] = useState("");
-
-  const { user } = JSON.parse(
-    sessionStorage.getItem("user") || JSON.stringify({ user: null })
-  );
-  // console.log(user);
-  if (user) {
-    return <Navigate to="/" />;
-  }
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginInfo>({
+  } = useForm<LoginInfoType>({
     defaultValues: defaultLoginInfo,
     resolver: zodResolver(LoginInfoSchema),
   });
 
-  async function onSubmit(formData: LoginInfo) {
+  async function onSubmit(formData: LoginInfoType) {
     try {
       const { data } = await axios.post("/api/login", formData);
-      sessionStorage.setItem("user", JSON.stringify({ user: data.username }));
+      sessionStorage.setItem("user", JSON.stringify({ name: data.username }));
       setLoginError("");
       navigate("/");
     } catch (error) {

@@ -1,14 +1,6 @@
-import {
-    BrowserRouter,
-    Route,
-    RouterProvider,
-    Routes,
-    createBrowserRouter,
-    createRoutesFromElements,
-    useLocation,
-} from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import { Login } from "./features/auth/routes/Login";
-import Dashboard from "./dashboard/routes/Dashboard";
+import Dashboard from "./features/dashboard/routes/Dashboard";
 import RootLayout from "./RootLayout";
 
 export function App() {

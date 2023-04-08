@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import { rest } from "msw";
-import { App } from "../../../App";
+import { App } from "@/App";
 import { server } from "@/mocks/servers";
 
 function usernameInput() {
@@ -27,7 +27,7 @@ function renderApp(initialEntries: string[]) {
   );
 }
 
-describe("Login", () => {
+describe("ログイン", () => {
   it("ログイン画面が表示される", async () => {
     // ログイン画面をレンダリングする
     renderApp(["/login"]);
@@ -107,7 +107,9 @@ describe("Login", () => {
     // エラーメッセージが表示されることを検証する
     expect(loginError).toBeInTheDocument();
   });
+});
 
+describe("リダイレクト", () => {
   it("ログインするとホームページにリダイレクトされる", async () => {
     // ログイン画面を表示
     renderApp(["/login"]);
@@ -124,9 +126,6 @@ describe("Login", () => {
     expect(screen.getByTestId("location-display")).toHaveTextContent("/");
     expect(screen.getByText(/dashboard/i)).toBeInTheDocument();
   });
-});
-
-describe("Redirect", () => {
   it("未ログイン状態だとダッシュボードページにアクセスできない。ログインページにリダイレクトされる", async () => {
     sessionStorage.clear();
     renderApp(["/"]);
