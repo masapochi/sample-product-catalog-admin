@@ -3,8 +3,9 @@ import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { LoginInfoSchema } from "../schemas/LoginInfoSchema";
-import type { LoginInfoType, UserType } from "../types/auth";
+import type { LoginInfoType } from "../types/auth";
 import { Navigate, useNavigate } from "react-router-dom";
+import { useAuth } from "../providers/AuthProvider";
 
 const defaultLoginInfo = {
   username: "",
@@ -12,8 +13,7 @@ const defaultLoginInfo = {
 };
 
 export function Login(): JSX.Element {
-  const user: UserType = JSON.parse(sessionStorage.getItem("user") || "null");
-
+  const { user, logIn } = useAuth();
   if (user) return <Navigate to="/" />;
 
   const navigate = useNavigate();
@@ -31,7 +31,7 @@ export function Login(): JSX.Element {
   async function onSubmit(formData: LoginInfoType) {
     try {
       const { data } = await axios.post("/api/login", formData);
-      sessionStorage.setItem("user", JSON.stringify({ name: data.username }));
+      logIn(formData.username);
       setLoginError("");
       navigate("/");
     } catch (error) {

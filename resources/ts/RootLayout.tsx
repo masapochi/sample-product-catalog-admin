@@ -1,11 +1,11 @@
 import React from "react";
-import Navbar from "./compoents/Navbar";
+import Header from "./compoents/Header";
 import { Outlet, useLocation } from "react-router-dom";
 
 export default function RootLayout() {
   return (
     <>
-      {/* <Navbar /> */}
+      <Header />
       <Outlet />
     </>
   );

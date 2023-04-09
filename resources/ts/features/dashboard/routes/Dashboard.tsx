@@ -1,8 +1,9 @@
-import { UserType } from "@/features/auth/types/auth";
+import { useAuth } from "../../auth/providers/AuthProvider";
 import { Navigate } from "react-router-dom";
 
 export default function Dashboard(): JSX.Element {
-  const user: UserType = JSON.parse(sessionStorage.getItem("user") || "null");
+  const { user } = useAuth();
+
   if (!user) {
     return <Navigate to="/login" />;
   }

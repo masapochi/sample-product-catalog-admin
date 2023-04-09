@@ -4,6 +4,7 @@ import { MemoryRouter } from "react-router-dom";
 import { rest } from "msw";
 import { App } from "@/App";
 import { server } from "@/mocks/servers";
+import { AuthProvider } from "../providers/AuthProvider";
 
 function usernameInput() {
   return screen.getByLabelText(/username/i);
@@ -21,9 +22,11 @@ const loginFailureMessage = /ユーザー名かパスワードが間違ってい
 
 function renderApp(initialEntries: string[]) {
   return render(
-    <MemoryRouter initialEntries={initialEntries}>
-      <App />
-    </MemoryRouter>
+    <AuthProvider>
+      <MemoryRouter initialEntries={initialEntries}>
+        <App />
+      </MemoryRouter>
+    </AuthProvider>
   );
 }
 
@@ -110,6 +113,9 @@ describe("ログイン", () => {
 });
 
 describe("リダイレクト", () => {
+  beforeEach(() => {
+    sessionStorage.clear();
+  });
   it("ログインするとホームページにリダイレクトされる", async () => {
     // ログイン画面を表示
     renderApp(["/login"]);
@@ -127,16 +133,40 @@ describe("リダイレクト", () => {
     expect(screen.getByText(/dashboard/i)).toBeInTheDocument();
   });
   it("未ログイン状態だとダッシュボードページにアクセスできない。ログインページにリダイレクトされる", async () => {
-    sessionStorage.clear();
     renderApp(["/"]);
     expect(screen.getByTestId("location-display")).toHaveTextContent("/login");
     expect(screen.getByRole("heading", { name: /login/i })).toBeInTheDocument();
   });
 
   it("ログイン状態だとログインページにアクセスできない", async () => {
-    sessionStorage.setItem("user", JSON.stringify({ user: "test" }));
+    sessionStorage.setItem("user", JSON.stringify({ name: "test" }));
     renderApp(["/login"]);
     expect(screen.getByTestId("location-display")).toHaveTextContent("/");
     expect(screen.getByText(/dashboard/i)).toBeInTheDocument();
+  });
+});
+describe("ナビゲーション", () => {
+  it("ログイン状態の時ユーザー名が表示されいてる", async () => {
+    const user = { name: "test" };
+    sessionStorage.setItem("user", JSON.stringify(user));
+
+    renderApp(["/"]);
+
+    expect(screen.getByText(user.name)).toBeInTheDocument();
+  });
+
+  it("ログアウトすることができる。ログインページにリダイレクト", async () => {
+    const user = { name: "test" };
+    sessionStorage.setItem("user", JSON.stringify(user));
+    renderApp(["/"]);
+
+    const userButton = screen.getByRole("button", { name: user.name });
+    expect(userButton).toBeInTheDocument();
+    await userEvent.click(userButton);
+    const logoutButton = await screen.findByRole("button", { name: /logout/i });
+    expect(logoutButton).toBeInTheDocument();
+    await userEvent.click(logoutButton);
+    expect(screen.getByTestId("location-display")).toHaveTextContent("/login");
+    expect(screen.getByRole("heading", { name: /login/i })).toBeInTheDocument();
   });
 });
