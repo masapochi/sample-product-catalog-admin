@@ -13,8 +13,7 @@ const defaultLoginInfo = {
 };
 
 export function Login(): JSX.Element {
-  const { user, logIn } = useAuth();
-  if (user) return <Navigate to="/" />;
+  const { logIn } = useAuth();
 
   const navigate = useNavigate();
   const [loginError, setLoginError] = useState("");
@@ -31,9 +30,9 @@ export function Login(): JSX.Element {
   async function onSubmit(formData: LoginInfoType) {
     try {
       const { data } = await axios.post("/api/login", formData);
-      logIn(formData.username);
       setLoginError("");
-      navigate("/");
+      logIn(formData.username);
+      navigate("/", { replace: true });
     } catch (error) {
       setLoginError("ユーザー名かパスワードが間違っています");
     }

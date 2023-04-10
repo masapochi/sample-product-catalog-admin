@@ -113,9 +113,7 @@ describe("ログイン", () => {
 });
 
 describe("リダイレクト", () => {
-  beforeEach(() => {
-    sessionStorage.clear();
-  });
+  beforeEach(() => {});
   it("ログインするとホームページにリダイレクトされる", async () => {
     // ログイン画面を表示
     renderApp(["/login"]);
@@ -133,6 +131,7 @@ describe("リダイレクト", () => {
     expect(screen.getByText(/dashboard/i)).toBeInTheDocument();
   });
   it("未ログイン状態だとダッシュボードページにアクセスできない。ログインページにリダイレクトされる", async () => {
+    sessionStorage.clear();
     renderApp(["/"]);
     expect(screen.getByTestId("location-display")).toHaveTextContent("/login");
     expect(screen.getByRole("heading", { name: /login/i })).toBeInTheDocument();

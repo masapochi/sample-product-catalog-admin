@@ -6,6 +6,8 @@ import {
   useState,
 } from "react";
 import { UserType } from "../types/auth";
+import { Navigate, useNavigate } from "react-router-dom";
+import { useSessionStorage } from "../../../hooks/useSessionStorage";
 
 type AuthContextValue = {
   user: UserType;
@@ -24,23 +26,16 @@ export const useAuth = (): AuthContextValue => {
 };
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<UserType | null>(null);
-
-  useEffect(() => {
-    const sessionUser = sessionStorage.getItem("user");
-    if (sessionUser) {
-      setUser(JSON.parse(sessionUser));
-    }
-  }, []);
+  const [user, setUser] = useSessionStorage("user", null);
 
   function logIn(name: string) {
     setUser({ name });
-    sessionStorage.setItem("user", JSON.stringify({ name }));
+    return <Navigate to="/" replace />;
   }
 
   function logOut() {
     setUser(null);
-    sessionStorage.removeItem("user");
+    return <Navigate to="/login" />;
   }
 
   return (

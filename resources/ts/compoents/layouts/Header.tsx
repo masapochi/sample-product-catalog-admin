@@ -7,8 +7,9 @@ import {
   Button,
   ButtonGroup,
 } from "react-bootstrap";
-import { useAuth } from "../features/auth/providers/AuthProvider";
+import { useAuth } from "../../features/auth/providers/AuthProvider";
 import { PersonCircle } from "react-bootstrap-icons";
+import { Link } from "react-router-dom";
 
 export default function Header(): JSX.Element {
   const { user, logIn, logOut } = useAuth();
@@ -20,8 +21,12 @@ export default function Header(): JSX.Element {
           <Navbar.Brand href="#home">Sample Product Catalog Admin</Navbar.Brand>
           {user && (
             <Nav className="ms-auto">
-              <Nav.Link href="#home">Home</Nav.Link>
-              <Nav.Link href="#link">Link</Nav.Link>
+              <Nav.Link as={Link} to="/">
+                Home
+              </Nav.Link>
+              <Nav.Link as={Link} to="/about">
+                Link
+              </Nav.Link>
               <Dropdown>
                 <Dropdown.Toggle
                   variant="dark"
