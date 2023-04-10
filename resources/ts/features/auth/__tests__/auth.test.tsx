@@ -5,6 +5,7 @@ import { rest } from "msw";
 import { App } from "@/App";
 import { server } from "@/mocks/servers";
 import { AuthProvider } from "../providers/AuthProvider";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 function usernameInput() {
   return screen.getByLabelText(/username/i);
@@ -20,13 +21,17 @@ const invalidUsernameMessage = /ユーザー名は入力必須項目です/i;
 const invalidPasswordMessage = /パスワードは入力必須項目です/i;
 const loginFailureMessage = /ユーザー名かパスワードが間違っています/i;
 
+const queryClient = new QueryClient();
+
 function renderApp(initialEntries: string[]) {
   return render(
-    <AuthProvider>
-      <MemoryRouter initialEntries={initialEntries}>
-        <App />
-      </MemoryRouter>
-    </AuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <MemoryRouter initialEntries={initialEntries}>
+          <App />
+        </MemoryRouter>
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }
 

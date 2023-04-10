@@ -1,11 +1,8 @@
-import { useState } from "react";
-import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { LoginInfoSchema } from "../schemas/LoginInfoSchema";
 import type { LoginInfoType } from "../types/auth";
-import { Navigate, useNavigate } from "react-router-dom";
-import { useAuth } from "../providers/AuthProvider";
+import { useLoginMutaion } from "../hooks/useLoginMutation";
 
 const defaultLoginInfo = {
   username: "",
@@ -13,11 +10,7 @@ const defaultLoginInfo = {
 };
 
 export function Login(): JSX.Element {
-  const { logIn } = useAuth();
-
-  const navigate = useNavigate();
-  const [loginError, setLoginError] = useState("");
-
+  const { mutation, loginError } = useLoginMutaion();
   const {
     register,
     handleSubmit,
@@ -28,14 +21,7 @@ export function Login(): JSX.Element {
   });
 
   async function onSubmit(formData: LoginInfoType) {
-    try {
-      const { data } = await axios.post("/api/login", formData);
-      setLoginError("");
-      logIn(formData.username);
-      navigate("/", { replace: true });
-    } catch (error) {
-      setLoginError("ユーザー名かパスワードが間違っています");
-    }
+    mutation.mutate(formData);
   }
 
   return (

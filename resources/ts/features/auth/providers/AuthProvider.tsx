@@ -10,7 +10,7 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { useSessionStorage } from "../../../hooks/useSessionStorage";
 
 type AuthContextValue = {
-  user: UserType;
+  user: UserType | null;
   logIn: (name: string) => void;
   logOut: () => void;
 };
